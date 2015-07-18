@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>header_files | BYCO</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="头文件为相关声明提供集中存储的位置
+包含 类定义 extern变量 函数声明
+好处：保证所有文件使用给定实体的统一声明
+更改声明时只需更新头文件
+头文件不该含有定义但是除了：
+
+定义类
+常量表达式赋值的const对象
+inline (-inl.h)
+
+
+const对象在头文件中const 默认为局部变量(若要全局需定义时 加上extern)
+Const应是常量表达式
+在编译时 一般会将const变">
+<meta property="og:type" content="article">
+<meta property="og:title" content="header_files">
+<meta property="og:url" content="http://likeyysdo.github.io/bearded-boo/2015/07/18/header-files/index.html">
+<meta property="og:site_name" content="BYCO">
+<meta property="og:description" content="头文件为相关声明提供集中存储的位置
+包含 类定义 extern变量 函数声明
+好处：保证所有文件使用给定实体的统一声明
+更改声明时只需更新头文件
+头文件不该含有定义但是除了：
+
+定义类
+常量表达式赋值的const对象
+inline (-inl.h)
+
+
+const对象在头文件中const 默认为局部变量(若要全局需定义时 加上extern)
+Const应是常量表达式
+在编译时 一般会将const变">
+<meta property="og:updated_time" content="2015-07-18T07:35:37.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="header_files">
+<meta name="twitter:description" content="头文件为相关声明提供集中存储的位置
+包含 类定义 extern变量 函数声明
+好处：保证所有文件使用给定实体的统一声明
+更改声明时只需更新头文件
+头文件不该含有定义但是除了：
+
+定义类
+常量表达式赋值的const对象
+inline (-inl.h)
+
+
+const对象在头文件中const 默认为局部变量(若要全局需定义时 加上extern)
+Const应是常量表达式
+在编译时 一般会将const变">
+  
+    <link rel="alternative" href="/atom.xml" title="BYCO" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  <!--
+  <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+-->
+  <link rel="stylesheet" href="/breaded-boo/css/style.css" type="text/css">
+  
+
+</head>
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">BYCO</a>
+      </h1>
+      
+        <h2 id="subtitle-wrap">
+          <a href="/" id="subtitle">blue yellow cray orange</a>
+        </h2>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="Search"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" results="0" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://likeyysdo.github.io/bearded-boo"></form>
+      </div>
+    </div>
+  </div>
+</header>
+      <div class="outer">
+        <section id="main"><article id="post-header-files" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/breaded-boo/2015/07/18/header-files/" class="article-date">
+  <time datetime="2015-07-18T07:21:21.000Z" itemprop="datePublished">2015-07-18</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/breaded-boo/categories/C/">C++</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      header_files
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="头文件">头文件</h2><p>为相关声明提供集中存储的位置</p>
+<p>包含 类定义 extern变量 函数声明</p>
+<h3 id="好处：">好处：</h3><p>保证所有文件使用给定实体的统一声明</p>
+<p>更改声明时只需更新头文件</p>
+<p>头文件不该含有定义但是除了：</p>
+<ul>
+<li>定义类</li>
+<li>常量表达式赋值的const对象</li>
+<li>inline (-inl.h)</li>
+</ul>
+<hr>
+<h3 id="const对象在头文件中">const对象在头文件中</h3><p>const 默认为局部变量(若要全局需定义时 加上extern)</p>
+<p>Const应是常量表达式</p>
+<p>在编译时 一般会将const变量用常量表达式替代</p>
+<p>若const不是常量表达式 则应在源文件中定义 并在头文件中extern声明</p>
+<hr>
+<h2 id="避免多重包含">避免多重包含</h2><figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="preprocessor">#ifndef PROJECT_PATH_FILE_H</span></span><br><span class="line"><span class="preprocessor">#<span class="keyword">define</span> PROJECT_PATH_FILE_H</span></span><br><span class="line"></span><br><span class="line"><span class="preprocessor">#<span class="keyword">endif</span> PROJECT_PATH_FILE_H</span></span><br></pre></td></tr></table></figure>
+<hr>
+<h2 id="包含文件名称次序">包含文件名称次序</h2><p>&lt;&gt;为标准头文件 path中查找</p>
+<p>“”非系统头文件 源文件目录</p>
+<p>次序：<br>C库<br>C++库<br>其他库<br>项目内头文件</p>
+<hr>
+<h2 id="前置声明(forward_declaration)">前置声明(forward declaration)</h2><p>使用前置声明可以显著减少需要包含的头文件数量</p>
+<p>举例：头文件用到类File，但不需要访问File的声明，则头文件中只需要前置声明class File，无需包含</p>
+<p>头文件如何做到使用类Foo而无非访问类的定义？</p>
+<ol>
+<li>将数据成员类型声明为Foo *或Foo &amp;</li>
+<li>参数，返回值类型为Foo的函数只是声明(但不定义实现)</li>
+<li>static 数据成员 类型可被声明为Foo，因为static变量定义在类定义之外<br>能依赖声明就不依赖定义</li>
+</ol>
+<hr>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://likeyysdo.github.io/bearded-boo/2015/07/18/header-files/" data-id="cic8smwem000d0j8bt056utgh" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/breaded-boo/tags/header-files/">header files</a></li></ul>
+
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/breaded-boo/2015/07/18/hello-world/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Newer</strong>
+      <div class="article-nav-title">
+        
+          Hello World
+        
+      </div>
+    </a>
+  
+  
+    <a href="/breaded-boo/2015/07/16/stl/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">stl</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Categories</h3>
+    <div class="widget">
+      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/breaded-boo/categories/C/">C++</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/breaded-boo/categories/cpp/">cpp</a><span class="category-list-count">1</span></li></ul>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tags</h3>
+    <div class="widget">
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/breaded-boo/tags/const/">const</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/breaded-boo/tags/header-files/">header files</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/breaded-boo/tags/hust/">hust</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/breaded-boo/tags/stl/">stl</a><span class="tag-list-count">1</span></li></ul>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tag Cloud</h3>
+    <div class="widget tagcloud">
+      <a href="/breaded-boo/tags/const/" style="font-size: 10px;">const</a> <a href="/breaded-boo/tags/header-files/" style="font-size: 10px;">header files</a> <a href="/breaded-boo/tags/hust/" style="font-size: 10px;">hust</a> <a href="/breaded-boo/tags/stl/" style="font-size: 10px;">stl</a>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Archives</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/breaded-boo/archives/2015/07/">July 2015</a><span class="archive-list-count">4</span></li></ul>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Recents</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/breaded-boo/2015/07/18/hello-world/">Hello World</a>
+          </li>
+        
+          <li>
+            <a href="/breaded-boo/2015/07/18/header-files/">header_files</a>
+          </li>
+        
+          <li>
+            <a href="/breaded-boo/2015/07/16/stl/">stl</a>
+          </li>
+        
+          <li>
+            <a href="/breaded-boo/2015/07/15/haha/">haha</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2015 John Doe<br>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+
+
+  <link rel="stylesheet" href="/breaded-boo/fancybox/jquery.fancybox.css" type="text/css">
+  <script src="/breaded-boo/fancybox/jquery.fancybox.pack.js" type="text/javascript"></script>
+
+
+<script src="/breaded-boo/js/script.js" type="text/javascript"></script>
+
+  </div>
+</body>
+</html>
