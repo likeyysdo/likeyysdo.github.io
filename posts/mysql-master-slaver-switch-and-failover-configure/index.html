@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="robots" content="noodp" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge, chrome=1">
+        <title>MySQL主从复制及FailOver切换配置 - byco&#39;s blog</title><meta name="Description" content=""><meta property="og:title" content="MySQL主从复制及FailOver切换配置" />
+<meta property="og:description" content="MySQL主从复制原理 master服务器将数据的改变都记录到二进制binlog日志中，只要master上的数据发生改变，则将其改变写入二进制" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="http://likeyysdo.github.io/posts/mysql-master-slaver-switch-and-failover-configure/" /><meta property="article:section" content="posts" />
+<meta property="article:published_time" content="2021-10-08T00:35:07+08:00" />
+<meta property="article:modified_time" content="2021-10-08T00:35:07+08:00" />
+
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="MySQL主从复制及FailOver切换配置"/>
+<meta name="twitter:description" content="MySQL主从复制原理 master服务器将数据的改变都记录到二进制binlog日志中，只要master上的数据发生改变，则将其改变写入二进制"/>
+<meta name="application-name" content="byco&#39;s blog">
+<meta name="apple-mobile-web-app-title" content="byco&#39;s blog"><link rel="shortcut icon" type="image/x-icon" href="/favicon.ico" />
+        <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+        <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png"><link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png"><link rel="manifest" href="/site.webmanifest"><link rel="canonical" href="http://likeyysdo.github.io/posts/mysql-master-slaver-switch-and-failover-configure/" /><link rel="stylesheet" href="/lib/normalize/normalize.min.css"><link rel="stylesheet" href="/css/style.min.css"><link rel="stylesheet" href="/lib/fontawesome-free/all.min.css"><link rel="stylesheet" href="/lib/animate/animate.min.css"><script type="application/ld+json">
+    {
+        "@context": "http://schema.org",
+        "@type": "BlogPosting",
+        "headline": "MySQL主从复制及FailOver切换配置",
+        "inLanguage": "zh-CN",
+        "mainEntityOfPage": {
+            "@type": "WebPage",
+            "@id": "http:\/\/likeyysdo.github.io\/posts\/mysql-master-slaver-switch-and-failover-configure\/"
+        },"genre": "posts","keywords": "MySQL","wordcount":  2154 ,
+        "url": "http:\/\/likeyysdo.github.io\/posts\/mysql-master-slaver-switch-and-failover-configure\/","datePublished": "2021-10-08T00:35:07+08:00","dateModified": "2021-10-08T00:35:07+08:00","publisher": {
+            "@type": "Organization",
+            "name": "作者"},"author": {
+                "@type": "Person",
+                "name": "作者"
+            },"description": ""
+    }
+    </script></head>
+    <body header-desktop="" header-mobile=""><script type="text/javascript">(window.localStorage && localStorage.getItem('theme') ? localStorage.getItem('theme') === 'dark' : ('' === 'auto' ? window.matchMedia('(prefers-color-scheme: dark)').matches : '' === 'dark')) && document.body.setAttribute('theme', 'dark');</script>
+
+        <div id="mask"></div><div class="wrapper"><header class="desktop" id="header-desktop">
+    <div class="header-wrapper">
+        <div class="header-title">
+            <a href="/" title="byco&#39;s blog">byco&#39;s blog</a>
+        </div>
+        <div class="menu">
+            <div class="menu-inner"><a class="menu-item" href="/posts/"> 文章 </a><a class="menu-item" href="/tags/"> 标签 </a><a class="menu-item" href="/categories/"> 分类 </a><span class="menu-item delimiter"></span><span class="menu-item search" id="search-desktop">
+                        <input type="text" placeholder="搜索文章标题或内容..." id="search-input-desktop">
+                        <a href="javascript:void(0);" class="search-button search-toggle" id="search-toggle-desktop" title="搜索">
+                            <i class="fas fa-search fa-fw"></i>
+                        </a>
+                        <a href="javascript:void(0);" class="search-button search-clear" id="search-clear-desktop" title="清空">
+                            <i class="fas fa-times-circle fa-fw"></i>
+                        </a>
+                        <span class="search-button search-loading" id="search-loading-desktop">
+                            <i class="fas fa-spinner fa-fw fa-spin"></i>
+                        </span>
+                    </span><a href="javascript:void(0);" class="menu-item theme-switch" title="切换主题">
+                    <i class="fas fa-adjust fa-fw"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+</header><header class="mobile" id="header-mobile">
+    <div class="header-container">
+        <div class="header-wrapper">
+            <div class="header-title">
+                <a href="/" title="byco&#39;s blog">byco&#39;s blog</a>
+            </div>
+            <div class="menu-toggle" id="menu-toggle-mobile">
+                <span></span><span></span><span></span>
+            </div>
+        </div>
+        <div class="menu" id="menu-mobile"><div class="search-wrapper">
+                    <div class="search mobile" id="search-mobile">
+                        <input type="text" placeholder="搜索文章标题或内容..." id="search-input-mobile">
+                        <a href="javascript:void(0);" class="search-button search-toggle" id="search-toggle-mobile" title="搜索">
+                            <i class="fas fa-search fa-fw"></i>
+                        </a>
+                        <a href="javascript:void(0);" class="search-button search-clear" id="search-clear-mobile" title="清空">
+                            <i class="fas fa-times-circle fa-fw"></i>
+                        </a>
+                        <span class="search-button search-loading" id="search-loading-mobile">
+                            <i class="fas fa-spinner fa-fw fa-spin"></i>
+                        </span>
+                    </div>
+                    <a href="javascript:void(0);" class="search-cancel" id="search-cancel-mobile">
+                        取消
+                    </a>
+                </div><a class="menu-item" href="/posts/" title="">文章</a><a class="menu-item" href="/tags/" title="">标签</a><a class="menu-item" href="/categories/" title="">分类</a><a href="javascript:void(0);" class="menu-item theme-switch" title="切换主题">
+                <i class="fas fa-adjust fa-fw"></i>
+            </a></div>
+    </div>
+</header>
+<div class="search-dropdown desktop">
+    <div id="search-dropdown-desktop"></div>
+</div>
+<div class="search-dropdown mobile">
+    <div id="search-dropdown-mobile"></div>
+</div>
+<main class="main">
+                <div class="container"><div class="toc" id="toc-auto">
+            <h2 class="toc-title">目录</h2>
+            <div class="toc-content" id="toc-content-auto"></div>
+        </div><article class="page single"><h1 class="single-title animated flipInX">MySQL主从复制及FailOver切换配置</h1><div class="post-meta">
+            <div class="post-meta-line"><span class="post-author"><a href="/" title="Author" rel=" author" class="author"><i class="fas fa-user-circle fa-fw"></i>作者</a></span>&nbsp;<span class="post-category">收录于 <a href="/categories/mysql/"><i class="far fa-folder fa-fw"></i>MySQL</a>&nbsp;<a href="/categories/db/"><i class="far fa-folder fa-fw"></i>DB</a></span></div>
+            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw"></i>&nbsp;<time datetime="2021-10-08">2021-10-08</time>&nbsp;<i class="fas fa-pencil-alt fa-fw"></i>&nbsp;约 2154 字&nbsp;
+                <i class="far fa-clock fa-fw"></i>&nbsp;预计阅读 5 分钟&nbsp;</div>
+        </div><div class="details toc" id="toc-static"  kept="">
+                <div class="details-summary toc-title">
+                    <span>目录</span>
+                    <span><i class="details-icon fas fa-angle-right"></i></span>
+                </div>
+                <div class="details-content toc-content" id="toc-content-static"><nav id="TableOfContents">
+  <ul>
+    <li>
+      <ul>
+        <li><a href="#mysql主从复制原理">MySQL主从复制原理</a></li>
+        <li><a href="#mysql主从复制配置">MySQL主从复制配置</a></li>
+        <li><a href="#failover切换配置">FailOver切换配置</a></li>
+        <li><a href="#参考文档">参考文档</a></li>
+      </ul>
+    </li>
+  </ul>
+</nav></div>
+            </div><div class="content" id="content"><h3 id="mysql主从复制原理">MySQL主从复制原理</h3>
+<p>master服务器将数据的改变都记录到二进制binlog日志中，只要master上的数据发生改变，则将其改变写入二进制日志；salve服务器会在一定时间间隔内对master二进制日志进行探测其是否发生改变，如果发生改变，则开始一个I/O Thread请求master二进制事件，同时主节点为每个I/O线程启动一个dump线程，用于向其发送二进制事件，并保存至从节点本地的中继日志中，从节点将启动SQL线程从中继日志中读取二进制日志，在本地重放，使得其数据和主节点的保持一致，最后I/O Thread和SQL Thread将进入睡眠状态，等待下一次被唤醒。</p>
+<p>具体原理参考<a href="https://www.cnblogs.com/kevingrace/p/6256603.html" target="_blank" rel="noopener noreffer">MySQL 主从同步(1) - 概念和原理介绍 以及 主从/主主模式 部署记录</a></p>
+<h3 id="mysql主从复制配置">MySQL主从复制配置</h3>
+<p>MySQL服务器信息：</p>
+<p>主库: 系统 Win10 20H2,数据库MySQL 8.0.21,地址 172.23.64.1:3306</p>
+<p>从库: 系统 Ubuntu20.04.1 LTS,数据库MySQL 8.0.21,地址172.23.79.79:3306</p>
+<p>同步的数据库名 test
+保证系统间端口可以互相访问</p>
+<h4 id="mysql主库配置">MySQL主库配置</h4>
+<p>修改MySQL服务配置文件my.ini
+win10下目录为‪C:\ProgramData\MySQL\MySQL Server 8.0\my.ini</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-shell" data-lang="shell"><span class="c1"># 服务器ID，需要保证每个服务器的ID唯一</span>
+server-id<span class="o">=</span><span class="m">1</span>
+
+<span class="c1"># 需要同步的数据库名，此处为test</span>
+binlog-do-db<span class="o">=</span><span class="nb">test</span>
+
+<span class="c1"># 需要忽略的数据库名，此处为mysql</span>
+binlog-ignore-db<span class="o">=</span>mysql
+
+<span class="c1"># 指定binlog二进制日志同步策略</span>
+<span class="c1"># sync_binlog=0，当事务提交之后，MySQL不做fsync之类的磁盘同步指令刷新binlog_cache中的信息到磁盘，而让Filesystem自行决定什么时候来做同步，或者cache满了之后才同步到磁盘。</span>
+<span class="c1"># sync_binlog=n，当每进行n次事务提交之后，MySQL将进行一次fsync之类的磁盘同步指令来将binlog_cache中的数据强制写入磁盘。</span>
+<span class="nv">sync_binlog</span> <span class="o">=</span> <span class="m">1</span>
+
+
+<span class="c1"># 跳过现有的采用checksum的事件，此处需要主从服务器保持一致</span>
+<span class="nv">binlog_checksum</span> <span class="o">=</span> none
+
+<span class="c1"># bin-log日志文件格式，设置为MIXED可以防止主键重复</span>
+<span class="nv">binlog_format</span> <span class="o">=</span> mixed
+</code></pre></div><p>重启MySQL服务后，执行<code>show master status;</code>结果如下:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-SQL" data-lang="SQL"><span class="o">+</span><span class="c1">----------------------------+----------+--------------+------------------+-------------------+
+</span><span class="c1"></span><span class="o">|</span><span class="w"> </span><span class="n">File</span><span class="w">                       </span><span class="o">|</span><span class="w"> </span><span class="k">Position</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">Binlog_Do_DB</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">Binlog_Ignore_DB</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">Executed_Gtid_Set</span><span class="w"> </span><span class="o">|</span><span class="w">
+</span><span class="w"></span><span class="o">+</span><span class="c1">----------------------------+----------+--------------+------------------+-------------------+
+</span><span class="c1"></span><span class="o">|</span><span class="w"> </span><span class="n">DESKTOP</span><span class="o">-</span><span class="n">NEON79U</span><span class="o">-</span><span class="n">bin</span><span class="p">.</span><span class="mi">000496</span><span class="w"> </span><span class="o">|</span><span class="w">      </span><span class="mi">156</span><span class="w"> </span><span class="o">|</span><span class="w">              </span><span class="o">|</span><span class="w">                  </span><span class="o">|</span><span class="w">                   </span><span class="o">|</span><span class="w">
+</span><span class="w"></span><span class="o">+</span><span class="c1">----------------------------+----------+--------------+------------------+-------------------+
+</span></code></pre></div><h4 id="mysql从库配置">MySQL从库配置</h4>
+<p>首先同步主库表结构及数据至从库</p>
+<p>修改MySQL服务配置文件
+Ubuntu20.04中目录为:/etc/mysql/mysql.conf.d/mysqld.cnf</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-shell" data-lang="shell"><span class="c1"># 服务器ID，保证唯一</span>
+server-id<span class="o">=</span><span class="m">2</span>
+
+<span class="c1"># 要复制的数据库名</span>
+replicate-do-db<span class="o">=</span><span class="nb">test</span>
+
+<span class="c1"># 要忽略的数据库名(其实上一个参数已经指定要复制的数据库名了，这一条可以不要)</span>
+replicate-ignore-db<span class="o">=</span>mysql
+
+<span class="c1"># 忽略所有错误</span>
+slave-skip-errors <span class="o">=</span> all
+
+<span class="c1"># 跳过现有的采用checksum的事件，此处需要主从服务器保持一致</span>
+<span class="nv">slave_sql_verify_checksum</span> <span class="o">=</span> none
+</code></pre></div><p>重启服务后，进入MySQL命令行</p>
+<p><code>stop slave;</code> 关闭slave</p>
+<p><code>change  master to master_host='172.23.64.1',master_user='user'master_password='xxxxx';</code></p>
+<p>配置主服务器信息
+master_host为主服务器地址
+master_user为可远程登陆的用户名
+master_password为密码</p>
+<p>在其他教程里，还指定了master_log_file为binglog文件名，就是主机执行<code>show master status;</code>得到的File值，如上文:DESKTOP-NEON79U-bin.000496</p>
+<p>以及master_log_pos，主机执行<code>show master status;</code>得到的Position 值，如上文:156
+在我的尝试中，不输入这两个值，子系统会自动配置，指定后反而会导致Last_IO_Error: Relay log write failure: could not queue event from master的错误</p>
+<p><code>start slave;</code>重启slave</p>
+<p>之后可以输入<code>show slave status\G;</code>来查看结果</p>
+<pre tabindex="0"><code>mysql&gt; show slave status\G;
+*************************** 1. row ***************************
+               Slave_IO_State: Waiting for source to send event
+                  Master_Host: 172.23.64.1
+                  Master_User: byco
+                  Master_Port: 3306
+                Connect_Retry: 60
+              Master_Log_File: DESKTOP-NEON79U-bin.000496
+          Read_Master_Log_Pos: 156
+               Relay_Log_File: ubuntubyco-relay-bin.000027
+                Relay_Log_Pos: 391
+        Relay_Master_Log_File: DESKTOP-NEON79U-bin.000496
+             Slave_IO_Running: Yes
+            Slave_SQL_Running: Yes
+              Replicate_Do_DB: test
+          Replicate_Ignore_DB: mysql
+           Replicate_Do_Table:
+       Replicate_Ignore_Table:
+      Replicate_Wild_Do_Table:
+  Replicate_Wild_Ignore_Table:
+                   Last_Errno: 0
+                   Last_Error:
+                 Skip_Counter: 0
+          Exec_Master_Log_Pos: 156
+              Relay_Log_Space: 840
+              Until_Condition: None
+               Until_Log_File:
+                Until_Log_Pos: 0
+           Master_SSL_Allowed: No
+           Master_SSL_CA_File:
+           Master_SSL_CA_Path:
+              Master_SSL_Cert:
+            Master_SSL_Cipher:
+               Master_SSL_Key:
+        Seconds_Behind_Master: 0
+Master_SSL_Verify_Server_Cert: No
+                Last_IO_Errno: 0
+                Last_IO_Error:
+               Last_SQL_Errno: 0
+               Last_SQL_Error:
+  Replicate_Ignore_Server_Ids:
+             Master_Server_Id: 1
+                  Master_UUID: 288897e6-dd45-11ea-86f8-00ff6eb77a84
+             Master_Info_File: mysql.slave_master_info
+                    SQL_Delay: 0
+          SQL_Remaining_Delay: NULL
+      Slave_SQL_Running_State: Replica has read all relay log; waiting for more updates
+           Master_Retry_Count: 86400
+                  Master_Bind:
+      Last_IO_Error_Timestamp:
+     Last_SQL_Error_Timestamp:
+               Master_SSL_Crl:
+           Master_SSL_Crlpath:
+           Retrieved_Gtid_Set:
+            Executed_Gtid_Set:
+                Auto_Position: 0
+         Replicate_Rewrite_DB:
+                 Channel_Name:
+           Master_TLS_Version:
+       Master_public_key_path:
+        Get_master_public_key: 0
+            Network_Namespace:
+1 row in set, 1 warning (0.00 sec)
+</code></pre><p>其中
+Slave_IO_Running和Slave_SQL_Running值为Yes则说明主从复制已经生效</p>
+<p>如果Slave_IO_Running=connecting，则连接出错，有可能是ip地址，防火墙的原因
+Slave_IO_Running=no，我遇到的原因包括mysql配置文件中slave_sql_verify_checksum不一致，以及在子系统指定主系统链接信息时指定了master_log_file以及master_log_pos。</p>
+<p>关于报错原因可以从上文的以下几项看到：
+Last_IO_Errno
+Last_IO_Error
+Last_SQL_Errno
+Last_SQL_Error</p>
+<p>以及可以查询mysql配置文件下log_error配置项对应的error文件来排查问题</p>
+<p>至此MySQL主从复制基本已经可以使用了</p>
+<h3 id="failover切换配置">FailOver切换配置</h3>
+<p>参考文档<a href="https://dev.mysql.com/doc/connector-j/8.0/en/connector-j-config-failover.html" target="_blank" rel="noopener noreffer">Configuring Server Failover for Connections Using JDBC</a></p>
+<p>通过配置多个数据源，当jdbc无法连接第一个数据源时，会切换到第二个数据源</p>
+<pre tabindex="0"><code class="language-url" data-lang="url">jdbc:mysql://[primary host][:port],[secondary host 1][:port][,[secondary host 2][:port]]...[/[database]]»
+[?propertyName1=propertyValue1[&amp;propertyName2=propertyValue2]...]
+</code></pre><p>本文使用的示例JDBC-URL为</p>
+<pre tabindex="0"><code class="language-url" data-lang="url">jdbc:mysql://172.23.64.1:3306,172.23.79.79:3306/test?useUnicode=true&amp;characterEncoding=UTF8&amp;rewriteBatchedStatements=true&amp;autoReconnect=true&amp;serverTimezone=UTC&amp;useSSL=false&amp;failOverReadOnly=false
+</code></pre><p>其中与FailOver切换相关的配置项有failOverReadOnly=false
+当该值为false时，切换后会将新的数据源视为可读写数据库，
+若为true，则只能是只读数据库</p>
+<h3 id="参考文档">参考文档</h3>
+<p><a href="https://www.cnblogs.com/kevingrace/p/6256603.html" target="_blank" rel="noopener noreffer">MySQL 主从同步(1) - 概念和原理介绍 以及 主从/主主模式 部署记录</a></p>
+<p><a href="https://www.cnblogs.com/kylinlin/p/5258719.html" target="_blank" rel="noopener noreffer">MySQL主从同步（复制）</a></p>
+<p><a href="https://cloud.tencent.com/developer/article/1640595" target="_blank" rel="noopener noreffer">Linux环境下MySQL开启远程访问权限</a></p>
+<p><a href="https://www.jianshu.com/p/435307de1c29" target="_blank" rel="noopener noreffer">MySQL8.0允许远程登陆</a></p>
+<p><a href="https://dev.mysql.com/doc/refman/8.0/en/replication.html" target="_blank" rel="noopener noreffer">MySQL :: MySQL 8.0 Reference Manual :: 17 Replication</a></p>
+<p><a href="https://dev.mysql.com/doc/connector-j/8.0/en/connector-j-config-failover.html" target="_blank" rel="noopener noreffer">9.1 Configuring Server Failover for Connections Using JDBC</a></p>
+</div><div class="post-footer" id="post-footer">
+    <div class="post-info">
+        <div class="post-info-line">
+            <div class="post-info-mod">
+                <span>更新于 2021-10-08</span>
+            </div>
+            <div class="post-info-license"></div>
+        </div>
+        <div class="post-info-line">
+            <div class="post-info-md"></div>
+            <div class="post-info-share">
+                <span></span>
+            </div>
+        </div>
+    </div>
+
+    <div class="post-info-more">
+        <section class="post-tags"><i class="fas fa-tags fa-fw"></i>&nbsp;<a href="/tags/mysql/">MySQL</a></section>
+        <section>
+            <span><a href="javascript:void(0);" onclick="window.history.back();">返回</a></span>&nbsp;|&nbsp;<span><a href="/">主页</a></span>
+        </section>
+    </div>
+
+    <div class="post-nav"></div>
+</div>
+</article></div>
+            </main><footer class="footer">
+        <div class="footer-container"><div class="footer-line">由 <a href="https://gohugo.io/" target="_blank" rel="noopener noreffer" title="Hugo 0.88.1">Hugo</a> 强力驱动 | 主题 - <a href="https://github.com/dillonzq/LoveIt" target="_blank" rel="noopener noreffer" title="LoveIt 0.2.10"><i class="far fa-kiss-wink-heart fa-fw"></i> LoveIt</a>
+                </div><div class="footer-line"><i class="far fa-copyright fa-fw"></i><span itemprop="copyrightYear">2019 - 2021</span><span class="author" itemprop="copyrightHolder">&nbsp;<a href="/" target="_blank"></a></span>&nbsp;|&nbsp;<span class="license"><a rel="license external nofollow noopener noreffer" href="https://creativecommons.org/licenses/by-nc/4.0/" target="_blank">CC BY-NC 4.0</a></span></div>
+        </div>
+    </footer></div>
+
+        <div id="fixed-buttons"><a href="#" id="back-to-top" class="fixed-button" title="回到顶部">
+                <i class="fas fa-arrow-up fa-fw"></i>
+            </a><a href="#" id="view-comments" class="fixed-button" title="查看评论">
+                <i class="fas fa-comment fa-fw"></i>
+            </a>
+        </div><script type="text/javascript" src="/lib/smooth-scroll/smooth-scroll.min.js"></script><script type="text/javascript" src="/lib/autocomplete/autocomplete.min.js"></script><script type="text/javascript" src="/lib/lunr/lunr.min.js"></script><script type="text/javascript" src="/lib/lunr/lunr.stemmer.support.min.js"></script><script type="text/javascript" src="/lib/lunr/lunr.zh.min.js"></script><script type="text/javascript" src="/lib/lazysizes/lazysizes.min.js"></script><script type="text/javascript" src="/lib/clipboard/clipboard.min.js"></script><script type="text/javascript">window.config={"code":{"copyTitle":"复制到剪贴板","maxShownLines":10},"comment":{},"search":{"highlightTag":"em","lunrIndexURL":"/index.json","lunrLanguageCode":"zh","lunrSegmentitURL":"/lib/lunr/lunr.segmentit.js","maxResultLength":10,"noResultsFound":"没有找到结果","snippetLength":50,"type":"lunr"}};</script><script type="text/javascript" src="/js/theme.min.js"></script></body>
+</html>
