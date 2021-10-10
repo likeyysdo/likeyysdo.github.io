@@ -61,20 +61,20 @@ shared_buffers = 128MB
 
 ``` SQL
 
-#启用tds_fdw插件
+-- 启用tds_fdw插件
 CREATE EXTENSION tds_fdw;
 
-#配置Microsoft SQL Server服务器地址
+-- 配置Microsoft SQL Server服务器地址
 CREATE SERVER nc_sqlserver    
       FOREIGN DATA WRAPPER tds_fdw
       OPTIONS(servername 'localhost',port '1433',DATABASE 'Test',language 'Simplified Chinese',character_set 'UTF-8');
 
-#配置可以访问Microsoft SQL Server要复制的数据库的用户以及密码
+-- 配置可以访问Microsoft SQL Server要复制的数据库的用户以及密码
 CREATE  USER MAPPING FOR postgres
          SERVER nc_sqlserver
          OPTIONS(username 'sa',password 'xxx');
 
-#将整个库链接到PostgreSQL，链接特定表的方式参照tds_fdw GitHub README
+-- 将整个库链接到PostgreSQL，链接特定表的方式参照tds_fdw GitHub README
 IMPORT FOREIGN SCHEMA dbo from server nc_sqlserver into public;
 
 ```
