@@ -1,0 +1,14 @@
+<rss xmlns:atom="http://www.w3.org/2005/Atom" version="2.0">
+    <channel>
+        <title>PostgreSQL - 分类 - byco&#39;s blog</title>
+        <link>http://likeyysdo.github.io/categories/postgresql/</link>
+        <description>PostgreSQL - 分类 - byco&#39;s blog</description>
+        <generator>Hugo -- gohugo.io</generator><language>zh-CN</language><lastBuildDate>Sun, 10 Oct 2021 23:12:54 &#43;0800</lastBuildDate><atom:link href="http://likeyysdo.github.io/categories/postgresql/" rel="self" type="application/rss+xml" /><item>
+    <title>PostgreSQL利用Foreign Table通过tds_fdw插件访问Microsoft SQL Server数据库表数据</title>
+    <link>http://likeyysdo.github.io/posts/postgresql-tds-transfer-access-mssql/</link>
+    <pubDate>Sun, 10 Oct 2021 23:12:54 &#43;0800</pubDate>
+    <author>作者</author>
+    <guid>http://likeyysdo.github.io/posts/postgresql-tds-transfer-access-mssql/</guid>
+    <description><![CDATA[PostgreSQL Foreign Table 简介 PostgreSQL Foreign Table 外部表支持从自身数据以外的数据源获取数据，例如文件、其他数据库。常见的有oracle_fdw,mysql_fdw,file_]]></description>
+</item></channel>
+</rss>
